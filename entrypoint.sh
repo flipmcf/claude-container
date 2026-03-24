@@ -21,7 +21,7 @@ else
 fi
 
 echo "Updating Claude Code..."
-npm install -g @anthropic-ai/claude-code --silent
+npm install -g @anthropic-ai/claude-code --silent || echo "Warning: update failed, continuing with installed version..."
 
 echo "Launching Claude..."
 claude --dangerously-skip-permissions

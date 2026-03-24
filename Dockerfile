@@ -10,6 +10,9 @@
 ## cd /home/flipmcf/Projects/my-project
 ## and run 'claude-here'
 
+## Auth is handled by mounting ~/.claude.json at runtime (see alias above)
+## No ANTHROPIC_API_KEY needed.
+
 FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -32,6 +35,8 @@ RUN useradd -m -s /bin/bash claude \
 RUN npm install -g @anthropic-ai/claude-code
 
 ## If git gets grumpy that /workspace is owned by the host user, not root...
+##  if you see 'fatal: detected dubious ownership in repository at '/workspace'
+##  uncomment this line
 ##RUN git config --global --add safe.directory /workspace
 
 
