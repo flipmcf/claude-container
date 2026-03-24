@@ -1,6 +1,18 @@
 #!/bin/bash
 set -e
 
+
+# If we're still root, fix uid and re-exec as claude
+if [ "$(id -u)" = "0" ]; then
+    if [ -n "$HOST_UID" ]; then
+        echo "Setting claude uid to $HOST_UID..."
+        usermod -u $HOST_UID claude
+    fi
+    exec gosu claude "$0" "$@"
+fi
+
+# From here down we are running as claude
+
 if [ -d /workspace/.git ]; then
     echo "Git repo detected."
     cd /workspace

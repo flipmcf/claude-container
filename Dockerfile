@@ -20,7 +20,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
     curl git wget unzip zip \
     build-essential python3 python3-pip \
-    ripgrep fd-find jq sudo \
+    ripgrep fd-find jq sudo gosu \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
@@ -43,7 +43,6 @@ RUN npm install -g @anthropic-ai/claude-code
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-USER claude
 WORKDIR /workspace
 
 ENTRYPOINT ["/entrypoint.sh"]
