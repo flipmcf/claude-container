@@ -1,4 +1,4 @@
-PUT THIS IN YOUR bash profile or something.
+First, add this alias to your bash profile or something.
 
 ```
 alias claude-here='docker run -it --rm --name claude-dev \
@@ -8,6 +8,7 @@ alias claude-here='docker run -it --rm --name claude-dev \
   claude-code-sandbox:latest'
 
 source your file, like `source ~/.bashrc` to read it once, or restart your terminal
+```
 
 Next, build the container:
 
