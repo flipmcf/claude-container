@@ -9,6 +9,16 @@ alias claude-here='docker run -it --rm --name claude-dev \
 
 source your file, like `source ~/.bashrc` to read it once, or restart your terminal
 
-Then, CD to the git repo you want to work with in Claude:
+Next, build the container:
+
+```
+cd ~/Projects/claude-sandbox
+docker build -t claude-code-sandbox .
+```
+
+Then go to your project and run it:
+
+```
 cd /home/flipmcf/Projects/my-project
-and run 'claude-here'
+run 'claude-here'
+```
