@@ -27,6 +27,10 @@ RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
+# We really don't need that ubuntu user.  Probably should change the base image layer.
+#  It gets in the way (uid 1000)... too much to explain.  just kill it.
+RUN userdel ubuntu
+    
 # Create claude user with sudo access
 RUN useradd -m -s /bin/bash claude \
     && echo "claude ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
