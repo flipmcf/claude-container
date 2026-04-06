@@ -10,14 +10,28 @@ A containerized environment where Claude Code operates as an isolated developer 
 
 ## Setup
 
-### 1. Get your Anthropic API Key
+### 1. Authenticate Claude (pick one)
+
+**Option A: Claude Pro/Max subscription** (recommended if you already have one)
+
+Your existing subscription works out of the box. Just make sure you've logged in on your host machine:
+
+```bash
+claude
+```
+
+Complete the browser login flow. The container will automatically mount your OAuth credentials from `~/.claude/.credentials.json`.
+
+> **Note:** This uses your existing Pro/Max subscription. No additional API billing needed.
+
+**Option B: Anthropic API key** (pay-per-use)
 
 1. Go to https://console.anthropic.com/settings/keys
 2. Click "Create Key"
-3. Give it a name (e.g. "claude-sandbox")
-4. Copy the key (starts with `sk-ant-`)
+3. Copy the key (starts with `sk-ant-`)
+4. Add prepaid credits at https://console.anthropic.com/settings/billing
 
-> **Note:** This requires an Anthropic account with API access. This is separate from a Claude Pro/Max subscription. You'll need to add billing at https://console.anthropic.com/settings/billing.
+> **Note:** API access is billed separately from a Claude Pro/Max subscription. You pay per token used.
 
 ### 2. (Optional) Get a GitHub Personal Access Token
 
@@ -40,12 +54,11 @@ cd ~/Projects/claude-sandbox   # or wherever you cloned this repo
 cp .env.example .env
 ```
 
-Edit `.env` and fill in your keys:
+Edit `.env`:
+- If using **Option A** (Pro/Max): no Claude auth needed in `.env`, just add your GitHub token if desired
+- If using **Option B** (API key): uncomment and fill in `ANTHROPIC_API_KEY`
 
-```
-ANTHROPIC_API_KEY=sk-ant-your_key_here
-GITHUB_TOKEN=ghp_your_token_here
-```
+See `.env.example` for details on each setting.
 
 > **Important:** `.env` is gitignored and will never be committed.
 
@@ -120,7 +133,13 @@ Claude's commits show as:
 
 ### Claude hangs on launch
 
-Make sure your `ANTHROPIC_API_KEY` is set in `.env`. Without it, Claude tries OAuth which requires a browser the container can't open.
+Make sure auth is configured. Either:
+- **Pro/Max users:** Run `claude` on your host and complete the browser login. The container mounts `~/.claude/.credentials.json` automatically.
+- **API key users:** Set `ANTHROPIC_API_KEY` in `.env`.
+
+### "Credit balance too low"
+
+You're using an API key (`ANTHROPIC_API_KEY`) but haven't added prepaid credits. Either add credits at https://console.anthropic.com/settings/billing, or switch to Option A (Pro/Max subscription) by removing the API key from `.env` and using OAuth instead.
 
 ### "Permission denied" errors
 

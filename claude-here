@@ -25,6 +25,7 @@ claude_here() {
 
   docker run -it --rm --name claude-dev \
     -v "$(pwd):/workspace" \
+    -v "$HOME/.claude/.credentials.json:/home/claude/.claude/.credentials.json:ro" \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -e HOST_UID=$(id -u) \
     $gh_args \
