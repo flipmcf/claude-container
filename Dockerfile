@@ -44,6 +44,8 @@ RUN npm install -g @anthropic-ai/claude-code
 ##RUN git config --global --add safe.directory /workspace
 
 
+RUN mkdir /work && chown claude:claude /work
+
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 

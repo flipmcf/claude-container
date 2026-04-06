@@ -1,0 +1,35 @@
+# Source this file: source claude-here
+# Then run 'claude-here' from any git repo
+
+# Load .env if it exists (for GITHUB_TOKEN, etc.)
+_claude_sandbox_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+claude_here() {
+  # Source .env from the claude-sandbox repo
+  if [ -f "$_claude_sandbox_dir/.env" ]; then
+    . "$_claude_sandbox_dir/.env"
+  fi
+
+  local gh_args=""
+  if [ -n "$GITHUB_TOKEN" ]; then
+    gh_args="-e GITHUB_TOKEN=$GITHUB_TOKEN"
+  else
+    # Fallback: mount host gh config if no token configured
+    gh_args="-v $HOME/.config/gh:/home/claude/.config/gh:ro"
+  fi
+
+  local api_args=""
+  if [ -n "$ANTHROPIC_API_KEY" ]; then
+    api_args="-e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY"
+  fi
+
+  docker run -it --rm --name claude-dev \
+    -v "$(pwd):/workspace" \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -e HOST_UID=$(id -u) \
+    $gh_args \
+    $api_args \
+    claude-code-sandbox:latest
+}
+
+alias claude-here='claude_here'
