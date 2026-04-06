@@ -21,6 +21,11 @@ if [ -d /workspace/.git ]; then
     cp -a /workspace/. /work
     cd /work
 
+    # Configure git to use GITHUB_TOKEN for push/pull/fetch
+    if [ -n "$GITHUB_TOKEN" ]; then
+        git config --global credential.helper '!f() { echo "password=$GITHUB_TOKEN"; }; f'
+    fi
+
     if git show-ref --verify --quiet refs/heads/claude; then
         echo "Switching to existing 'claude' branch..."
         git checkout claude
