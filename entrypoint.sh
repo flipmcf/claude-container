@@ -34,6 +34,10 @@ if [ -d /workspace/.git ]; then
         git config --global credential.helper '!f() { echo "password=$GITHUB_TOKEN"; }; f'
     fi
 
+    # Clean working tree so branch switch works (host files are untouched)
+    git checkout -- . 2>/dev/null || true
+    git clean -fd 2>/dev/null || true
+
     if git show-ref --verify --quiet refs/heads/claude; then
         echo "Switching to existing 'claude' branch..."
         git checkout claude
