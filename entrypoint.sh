@@ -8,6 +8,14 @@ if [ "$(id -u)" = "0" ]; then
         echo "Setting claude uid to $HOST_UID..."
         usermod -u $HOST_UID claude
     fi
+    # Copy OAuth credentials to claude's home (so host file stays read-only)
+    if [ -f /tmp/.credentials.json ]; then
+        mkdir -p /home/claude/.claude
+        cp /tmp/.credentials.json /home/claude/.claude/.credentials.json
+        chown claude:claude /home/claude/.claude/.credentials.json
+        chmod 600 /home/claude/.claude/.credentials.json
+    fi
+
     exec gosu claude "$0" "$@"
 fi
 
@@ -41,6 +49,17 @@ fi
 
 echo "Updating Claude Code..."
 npm install -g @anthropic-ai/claude-code --silent || echo "Warning: update failed, continuing with installed version..."
+
+# Check auth status
+if [ -f /home/claude/.claude/.credentials.json ]; then
+    echo "OAuth credentials mounted."
+elif [ -n "$ANTHROPIC_API_KEY" ]; then
+    echo "API key configured."
+else
+    echo "WARNING: No auth configured. Claude will prompt for login."
+    echo "  Option A: Run 'claude' on your host to set up OAuth"
+    echo "  Option B: Set ANTHROPIC_API_KEY in .env"
+fi
 
 echo "Launching Claude..."
 exec claude --dangerously-skip-permissions
