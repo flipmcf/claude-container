@@ -68,19 +68,15 @@ See `.env.example` for details on each setting.
 docker build -t claude-code-sandbox:latest .
 ```
 
-### 5. Source the launcher
+### 5. Install the launcher
 
-Add this to your `~/.bashrc` or `~/.zshrc`:
-
-```bash
-source ~/Projects/claude-sandbox/claude-here
-```
-
-Then reload your shell:
+Symlink `claude-here` onto your `PATH`:
 
 ```bash
-source ~/.bashrc  # or ~/.zshrc
+ln -s ~/Projects/claude-sandbox/claude-here ~/bin/claude-here
 ```
+
+(Make sure `~/bin` is on your `PATH`. If not, use `/usr/local/bin` or wherever you keep scripts.)
 
 ## Usage
 

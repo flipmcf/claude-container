@@ -1,37 +1,35 @@
-# Source this file: source claude-here
-# Then run 'claude-here' from any git repo
+#!/bin/bash
+# Launch Claude Code sandbox in the current directory
+# Install: ln -s ~/Projects/claude-sandbox/claude-here ~/bin/claude-here
 
-# Load .env if it exists (for GITHUB_TOKEN, etc.)
-_claude_sandbox_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+set -e
 
-claude_here() {
-  # Source .env from the claude-sandbox repo
-  if [ -f "$_claude_sandbox_dir/.env" ]; then
-    . "$_claude_sandbox_dir/.env"
-  fi
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-  local gh_args=""
-  if [ -n "$GITHUB_TOKEN" ]; then
-    gh_args="-e GITHUB_TOKEN=$GITHUB_TOKEN"
-  else
-    # Fallback: mount host gh config if no token configured
-    gh_args="-v $HOME/.config/gh:/home/claude/.config/gh:ro"
-  fi
+# Load .env if it exists
+if [ -f "$SCRIPT_DIR/.env" ]; then
+  . "$SCRIPT_DIR/.env"
+fi
 
-  local api_args=""
-  if [ -n "$ANTHROPIC_API_KEY" ]; then
-    api_args="-e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY"
-  fi
+gh_args=""
+if [ -n "$GITHUB_TOKEN" ]; then
+  gh_args="-e GITHUB_TOKEN=$GITHUB_TOKEN"
+else
+  # Fallback: mount host gh config if no token configured
+  gh_args="-v $HOME/.config/gh:/home/claude/.config/gh:ro"
+fi
 
-  docker run -it --rm --name claude-dev \
-    -v "$(pwd):/workspace" \
-    -v "$HOME/.claude:/tmp/.claude-host:ro" \
-    -v "$HOME/.claude.json:/tmp/.claude.json:ro" \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    -e HOST_UID=$(id -u) \
-    $gh_args \
-    $api_args \
-    claude-code-sandbox:latest
-}
+api_args=""
+if [ -n "$ANTHROPIC_API_KEY" ]; then
+  api_args="-e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY"
+fi
 
-alias claude-here='claude_here'
+docker run -it --rm --name claude-dev \
+  -v "$(pwd):/workspace" \
+  -v "$HOME/.claude:/tmp/.claude-host:ro" \
+  -v "$HOME/.claude.json:/tmp/.claude.json:ro" \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -e HOST_UID=$(id -u) \
+  $gh_args \
+  $api_args \
+  claude-code-sandbox:latest

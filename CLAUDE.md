@@ -23,7 +23,7 @@
 
 ## Key Files
 
-- `claude-here` — bash function (not alias) sourced by user; loads `.env`, runs `docker run`
+- `claude-here` — standalone shell script; loads `.env`, runs `docker run`. Symlink onto `PATH` to use.
 - `entrypoint.sh` — UID matching via gosu, auth copy, repo copy, branch setup, launches claude
 - `.env` — gitignored, holds `GITHUB_TOKEN` (and optionally `ANTHROPIC_API_KEY`)
 - `.env.example` — documents both auth options
@@ -32,12 +32,10 @@
 
 - Claude Code npm update fails inside container (non-blocking, uses baked-in version)
 - First-run trust prompt appears every launch (ephemeral container, no persisted state)
-- `claude-here` function name uses underscore (`claude_here`) with alias wrapper because bash doesn't allow hyphens in function names
 
 ## Build & Run
 
 ```bash
 docker build -t claude-code-sandbox:latest .
-source claude-here
 claude-here
 ```
