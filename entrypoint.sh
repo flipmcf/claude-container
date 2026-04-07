@@ -8,12 +8,19 @@ if [ "$(id -u)" = "0" ]; then
         echo "Setting claude uid to $HOST_UID..."
         usermod -u $HOST_UID claude
     fi
-    # Copy OAuth credentials to claude's home (so host file stays read-only)
-    if [ -f /tmp/.credentials.json ]; then
+    # Copy only auth-related files (not sessions/projects which can confuse Claude)
+    if [ -d /tmp/.claude-host ]; then
         mkdir -p /home/claude/.claude
-        cp /tmp/.credentials.json /home/claude/.claude/.credentials.json
-        chown claude:claude /home/claude/.claude/.credentials.json
-        chmod 600 /home/claude/.claude/.credentials.json
+        for f in .credentials.json settings.json; do
+            if [ -f "/tmp/.claude-host/$f" ]; then
+                cp "/tmp/.claude-host/$f" "/home/claude/.claude/$f"
+            fi
+        done
+        chown -R claude:claude /home/claude/.claude
+    fi
+    if [ -f /tmp/.claude.json ]; then
+        cp /tmp/.claude.json /home/claude/.claude.json
+        chown claude:claude /home/claude/.claude.json
     fi
 
     exec gosu claude "$0" "$@"
@@ -56,7 +63,7 @@ npm install -g @anthropic-ai/claude-code --silent || echo "Warning: update faile
 
 # Check auth status
 if [ -f /home/claude/.claude/.credentials.json ]; then
-    echo "OAuth credentials mounted."
+    echo "OAuth credentials loaded."
 elif [ -n "$ANTHROPIC_API_KEY" ]; then
     echo "API key configured."
 else
