@@ -5,7 +5,7 @@ A containerized environment where Claude Code operates as an isolated developer 
 ## Prerequisites
 
 - Docker
-- An Anthropic API key
+- A Claude Pro/Max subscription **or** an Anthropic API key
 - (Optional) A GitHub fine-grained personal access token
 
 ## Setup
@@ -124,8 +124,9 @@ Claude's commits show as:
 
 ## Security
 
-- Your API keys live only in `.env` (gitignored, never committed)
-- The host repo is copied, not modified — Claude works on an isolated copy
+- OAuth credentials and `.claude.json` are mounted read-only and copied into the container — host files are never modified
+- GitHub token lives only in `.env` (gitignored, never committed)
+- The host repo is copied, not modified — Claude works on an isolated copy at `/work`
 - GitHub token can be scoped to specific repos with minimal permissions
 - Container is ephemeral — destroyed on exit
 
@@ -134,8 +135,10 @@ Claude's commits show as:
 ### Claude hangs on launch
 
 Make sure auth is configured. Either:
-- **Pro/Max users:** Run `claude` on your host and complete the browser login. The container mounts `~/.claude/.credentials.json` automatically.
+- **Pro/Max users:** Run `claude` on your host and complete the browser login. The container copies your OAuth credentials from `~/.claude/` automatically.
 - **API key users:** Set `ANTHROPIC_API_KEY` in `.env`.
+
+Also make sure you don't have a stale `ANTHROPIC_API_KEY` in your shell environment from a previous session. Open a fresh terminal or run `unset ANTHROPIC_API_KEY`.
 
 ### "Credit balance too low"
 
