@@ -38,12 +38,6 @@ RUN useradd -m -s /bin/bash claude \
 # Install Claude Code globally, accessible by claude user
 RUN npm install -g @anthropic-ai/claude-code
 
-## If git gets grumpy that /workspace is owned by the host user, not root...
-##  if you see 'fatal: detected dubious ownership in repository at '/workspace'
-##  uncomment this line
-##RUN git config --global --add safe.directory /workspace
-
-
 RUN mkdir /work && chown claude:claude /work
 
 COPY entrypoint.sh /entrypoint.sh
