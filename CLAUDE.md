@@ -18,15 +18,24 @@
 
 - Entrypoint creates/switches to `claude` branch in `/work`
 - Uncommitted changes in the copy are reverted before branch switch (`git checkout -- .` + `git clean -fd`)
-- `GITHUB_TOKEN` from `.env` configures git credential helper for push/pull/fetch
+- `GITHUB_TOKEN` configures git credential helper for push/pull/fetch
 - Git identity: "Claude (AI Assistant)" / claude@openforgesolutions.com
+
+## Per-Repo Secrets (.claude.env)
+
+- Place a `.claude.env` file in the root of any target repo with repo-specific tokens (e.g. `GITHUB_TOKEN`)
+- `claude-here` mounts it read-only into the container; `entrypoint.sh` sources it at startup
+- This allows fine-grained GitHub PATs scoped per-repo without rebuilding the container
+- Add `.claude.env` to each repo's `.gitignore`
+- See `.claude.env.example` for format and recommended GitHub PAT permissions
 
 ## Key Files
 
-- `claude-here` — standalone shell script; loads `.env`, runs `docker run`. Symlink onto `PATH` to use.
-- `entrypoint.sh` — UID matching via gosu, auth copy, repo copy, branch setup, launches claude
-- `.env` — gitignored, holds `GITHUB_TOKEN` (and optionally `ANTHROPIC_API_KEY`)
-- `.env.example` — documents both auth options
+- `claude-here` — standalone shell script; loads `.env`, mounts `.claude.env`, runs `docker run`. Symlink onto `PATH` to use.
+- `entrypoint.sh` — UID matching via gosu, auth copy, repo copy, .claude.env sourcing, branch setup, launches claude
+- `.env` — gitignored, holds global settings (e.g. `ANTHROPIC_API_KEY`)
+- `.env.example` — documents global auth options
+- `.claude.env.example` — documents per-repo token setup
 
 ## Known Issues
 
