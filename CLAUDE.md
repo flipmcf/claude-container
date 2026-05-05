@@ -24,6 +24,7 @@
 ## Key Files
 
 - `claude-here` — standalone shell script; loads `.env`, runs `docker run`. Symlink onto `PATH` to use.
+- `claude-here.ps1` — PowerShell equivalent for Windows hosts; place on `$env:Path` to use.
 - `entrypoint.sh` — UID matching via gosu, auth copy, repo copy, branch setup, launches claude
 - `.env` — gitignored, holds `GITHUB_TOKEN` (and optionally `ANTHROPIC_API_KEY`)
 - `.env.example` — documents both auth options
@@ -39,3 +40,9 @@
 docker build -t claude-code-sandbox:latest .
 claude-here
 ```
+
+  On Windows (PowerShell):
+  ```powershell
+  docker build -t claude-code-sandbox:latest .
+  .\claude-here.ps1
+  ```
