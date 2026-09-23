@@ -19,6 +19,7 @@
 - Entrypoint creates/switches to `claude` branch in `/work`
 - Uncommitted changes in the copy are reverted before branch switch (`git checkout -- .` + `git clean -fd`)
 - `GITHUB_TOKEN` configures git credential helper for push/pull/fetch
+- **HTTPS + fine-grained PAT only, never SSH keys.** Entrypoint rewrites any SSH remote (`git@host:path`, `ssh://...`) in the `/work` copy to HTTPS; existing HTTPS remotes are untouched. A `GITHUB_TOKEN` without the `github_pat_` prefix (classic PAT) aborts startup; no token means read-only access with a warning
 - Git identity: "Claude (AI Assistant)" / claude@openforgesolutions.com
 
 ## Per-Repo Secrets (.claude.env)

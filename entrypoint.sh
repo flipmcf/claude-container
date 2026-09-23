@@ -44,12 +44,38 @@ if [ -d /workspace/.git ]; then
     cp -a /workspace/. /work
     cd /work
 
-    # Configure git to use GITHUB_TOKEN for push/pull/fetch
+    # Git access is HTTPS + fine-grained PAT only; SSH keys are never used.
     if [ -n "$GITHUB_TOKEN" ]; then
+        case "$GITHUB_TOKEN" in
+            github_pat_*) ;;
+            *)
+                echo "ERROR: GITHUB_TOKEN is not a fine-grained personal access token (expected 'github_pat_' prefix)." >&2
+                echo "Create one scoped to this repo; see .claude.env.example." >&2
+                exit 1
+                ;;
+        esac
         git config --global credential.helper '!f() { echo "username=x-access-token"; echo "password=$GITHUB_TOKEN"; }; f'
-        # The container has no SSH keys, so use HTTPS for github.com remotes
-        git config --global url."https://github.com/".insteadOf "git@github.com:"
+    else
+        echo "Warning: no GITHUB_TOKEN set. Git remote access will be read-only at best."
     fi
+
+    # Rewrite any SSH remote to HTTPS (scp-style and ssh:// forms). HTTPS remotes are left alone.
+    # This only touches the /work copy's config; the host repo is unchanged.
+    for remote in $(git remote); do
+        for kind in url pushurl; do
+            old=$(git config --get "remote.$remote.$kind" 2>/dev/null) || continue
+            new=$(printf '%s' "$old" | sed -E \
+                -e 's#^ssh://([^@/]+@)?([^/:]+)(:[0-9]+)?/#https://\2/#' \
+                -e 's#^[^@/:]+@([^:/]+):/?#https://\1/#')
+            if [ "$new" != "$old" ]; then
+                echo "Rewriting SSH remote '$remote' ($kind) to HTTPS: $new"
+                git config "remote.$remote.$kind" "$new"
+            fi
+        done
+    done
+    # Safety net for submodules and any remote added later
+    git config --global url."https://github.com/".insteadOf "git@github.com:"
+    git config --global --add url."https://github.com/".insteadOf "ssh://git@github.com/"
 
     # Clean working tree so branch switch works (host files are untouched)
     git checkout -- . 2>/dev/null || true
