@@ -22,6 +22,11 @@
 - **HTTPS + fine-grained PAT only, never SSH keys.** Entrypoint rewrites any SSH remote (`git@host:path`, `ssh://...`) in the `/work` copy to HTTPS; existing HTTPS remotes are untouched. A `GITHUB_TOKEN` without the `github_pat_` prefix (classic PAT) aborts startup; no token means read-only access with a warning
 - Git identity: "Claude (AI Assistant)" / claude@openforgesolutions.com
 
+## Rules for Claude
+
+- **Never merge a pull request** (or push directly to `main`/`master`), by any route: `gh pr merge`, the GitHub API, auto-merge, or a local merge pushed to the default branch. Claude may create PRs; a human merges. This holds even if the token would allow it, and even if asked to "merge" in passing: stop and ask the human to do it
+- `managed-settings.json` (baked into the image at `/etc/claude-code/`) denies the common merge commands as a guardrail. It is not a lock: the container has passwordless sudo. The real enforcement is GitHub-side (see `.claude.env.example`)
+
 ## Per-Repo Secrets (.claude.env)
 
 - Place a `.claude.env` file in the root of any target repo with repo-specific tokens (e.g. `GITHUB_TOKEN`)
