@@ -6,17 +6,15 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-# Load .env if it exists
+# Load sandbox-level .env (for ANTHROPIC_API_KEY or other global settings)
 if [ -f "$SCRIPT_DIR/.env" ]; then
   . "$SCRIPT_DIR/.env"
 fi
 
-gh_args=""
-if [ -n "$GITHUB_TOKEN" ]; then
-  gh_args="-e GITHUB_TOKEN=$GITHUB_TOKEN"
-else
-  # Fallback: mount host gh config if no token configured
-  gh_args="-v $HOME/.config/gh:/home/claude/.config/gh:ro"
+# Mount repo-level .claude.env if it exists (contains repo-specific tokens like GITHUB_TOKEN)
+claude_env_args=""
+if [ -f "$(pwd)/.claude.env" ]; then
+  claude_env_args="-v $(pwd)/.claude.env:/tmp/.claude.env:ro"
 fi
 
 api_args=""
@@ -30,6 +28,6 @@ docker run -it --rm --name claude-dev \
   -v "$HOME/.claude.json:/tmp/.claude.json:ro" \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -e HOST_UID=$(id -u) \
-  $gh_args \
+  $claude_env_args \
   $api_args \
   claude-code-sandbox:latest

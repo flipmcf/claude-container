@@ -28,6 +28,14 @@ fi
 
 # From here down we are running as claude
 
+# Load repo-specific env (GITHUB_TOKEN, etc.) from .claude.env if mounted
+if [ -f /tmp/.claude.env ]; then
+    echo "Loading repo-specific environment from .claude.env..."
+    set -a
+    . /tmp/.claude.env
+    set +a
+fi
+
 if [ -d /workspace/.git ]; then
     echo "Git repo detected. Copying to /work..."
     git config --global --add safe.directory /workspace
