@@ -40,6 +40,9 @@ ENV PATH="/home/claude/.local/bin:${PATH}"
 
 RUN mkdir /work && chown claude:claude /work
 
+# Guardrail: deny PR merges / pushes to main. Humans merge. (See CLAUDE.md)
+COPY managed-settings.json /etc/claude-code/managed-settings.json
+
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
