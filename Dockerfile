@@ -23,9 +23,6 @@ RUN apt-get update && apt-get install -y \
     ripgrep fd-find jq sudo gosu \
     && rm -rf /var/lib/apt/lists/*
 
-RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
-    && apt-get install -y nodejs \
-    && rm -rf /var/lib/apt/lists/*
 
 # We really don't need that ubuntu user.  Probably should change the base image layer.
 #  It gets in the way (uid 1000)... too much to explain.  just kill it.
@@ -35,8 +32,11 @@ RUN userdel ubuntu
 RUN useradd -m -s /bin/bash claude \
     && echo "claude ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# Install Claude Code globally, accessible by claude user
-RUN npm install -g @anthropic-ai/claude-code
+# Install Claude Code via the native installer (per-user, into ~/.local/bin)                   
+USER claude                                                                                    
+RUN curl -fsSL https://claude.ai/install.sh | bash                                             
+USER root                                                                                      
+ENV PATH="/home/claude/.local/bin:${PATH}" 
 
 RUN mkdir /work && chown claude:claude /work
 

@@ -39,7 +39,6 @@
 
 ## Known Issues
 
-- Claude Code npm update fails inside container (non-blocking, uses baked-in version)
 - First-run trust prompt appears every launch (ephemeral container, no persisted state)
 
 ## Build & Run
@@ -48,3 +47,9 @@
 docker build -t claude-code-sandbox:latest .
 claude-here
 ```
+
+  On Windows (PowerShell):
+  ```powershell
+  docker build -t claude-code-sandbox:latest .
+  .\claude-here.ps1
+  ```
