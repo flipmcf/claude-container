@@ -46,7 +46,9 @@ if [ -d /workspace/.git ]; then
 
     # Configure git to use GITHUB_TOKEN for push/pull/fetch
     if [ -n "$GITHUB_TOKEN" ]; then
-        git config --global credential.helper '!f() { echo "password=$GITHUB_TOKEN"; }; f'
+        git config --global credential.helper '!f() { echo "username=x-access-token"; echo "password=$GITHUB_TOKEN"; }; f'
+        # The container has no SSH keys, so use HTTPS for github.com remotes
+        git config --global url."https://github.com/".insteadOf "git@github.com:"
     fi
 
     # Clean working tree so branch switch works (host files are untouched)
