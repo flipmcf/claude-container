@@ -59,7 +59,8 @@ else
 fi
 
 echo "Updating Claude Code..."
-npm install -g @anthropic-ai/claude-code --silent || echo "Warning: update failed, continuing with installed version..."
+claude update || echo "Warning: update failed, continuing with installed version..."
+
 
 # Check auth status
 if [ -f /home/claude/.claude/.credentials.json ]; then
