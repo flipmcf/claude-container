@@ -1,18 +1,3 @@
-## Once this is built:
-## PUT THIS IN YOUR bash profile or something.
-## alias claude-here='docker run -it --rm --name claude-dev \
-##  -v "$(pwd):/workspace" \
-##  -v "$HOME/.claude.json:/home/claude/.claude.json:ro" \
-##  -v "$HOME/.claude:/home/claude/.claude:ro" \
-##  claude-code-sandbox:latest'
-
-## Then, CD to the project / git repo you want to work with in Claude:
-## cd /home/flipmcf/Projects/my-project
-## and run 'claude-here'
-
-## Auth is handled by mounting ~/.claude.json at runtime (see alias above)
-## No ANTHROPIC_API_KEY needed.
-
 FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -39,6 +24,12 @@ USER root
 ENV PATH="/home/claude/.local/bin:${PATH}" 
 
 RUN mkdir /work && chown claude:claude /work
+
+# Install github CLI
+RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+    && apt-get update && apt-get install -y gh \
+    && rm -rf /var/lib/apt/lists/*
 
 # Guardrail: deny PR merges / pushes to main. Humans merge. (See CLAUDE.md)
 COPY managed-settings.json /etc/claude-code/managed-settings.json

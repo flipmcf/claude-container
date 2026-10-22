@@ -33,7 +33,7 @@ Complete the browser login flow. The container will automatically mount your OAu
 
 > **Note:** API access is billed separately from a Claude Pro/Max subscription. You pay per token used.
 
-### 2. (Optional) Get a GitHub Personal Access Token
+### 2. (Optional but Highly Recommended) Get a GitHub Personal Access Token
 
 This lets Claude create PRs, push branches, and manage issues.
 
@@ -60,7 +60,7 @@ Edit `.env`:
 
 See `.env.example` for details on each setting.
 
-> **Important:** `.env` is gitignored and will never be committed.
+> **Important:** your `.env` contains credentials.  Is gitignored and should never be committed or shared.
 
 ### 4. Build the container
 
