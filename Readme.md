@@ -102,7 +102,7 @@ You: "Create a PR for these changes"
 Claude: [pushes branch, creates PR via gh CLI]
 ```
 
-### Docker-in-Docker
+### Docker-in-Docker - Not yet
 
 Claude can build and test containers if the Docker socket is mounted (included by default):
 
