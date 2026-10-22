@@ -21,6 +21,7 @@
 - `GITHUB_TOKEN` configures git credential helper for push/pull/fetch
 - **HTTPS + fine-grained PAT only, never SSH keys.** Entrypoint rewrites any SSH remote (`git@host:path`, `ssh://...`) in the `/work` copy to HTTPS; existing HTTPS remotes are untouched. A `GITHUB_TOKEN` without the `github_pat_` prefix (classic PAT) aborts startup; no token means read-only access with a warning
 - Git identity: "Claude (AI Assistant)" / claude@openforgesolutions.com
+- 
 
 ## Rules for Claude
 
@@ -32,8 +33,9 @@
 - Place a `.claude.env` file in the root of any target repo with repo-specific tokens (e.g. `GITHUB_TOKEN`)
 - `claude-here` mounts it read-only into the container; `entrypoint.sh` sources it at startup
 - This allows fine-grained GitHub PATs scoped per-repo without rebuilding the container
-- Add `.claude.env` to each repo's `.gitignore`
 - See `.claude.env.example` for format and recommended GitHub PAT permissions
+- Add `.claude.env` to each repo's `.gitignore`. Create a PR and ask them to merge `.gitignore`.  
+- If `.claude.env` is found committed to the repo with a key, stop, refuse to do work, and give the user instructions on how to revokes the key and create a new one before moving forward.
 
 ## Key Files
 
